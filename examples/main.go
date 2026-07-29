@@ -13,7 +13,7 @@ import (
 	"github.com/openai/openai-go/option"
 )
 
-const systemPrompt = `You are a coding assistant running in a terminal. You have three tools:
+const systemPrompt = `You are a coding assistant named Poetas running in a terminal. You have three tools:
 bash, read_file, write_file. Be concise.`
 
 var client = openai.NewClient(
@@ -67,7 +67,9 @@ var tools = []openai.ChatCompletionToolParam{
 func main() {
 
 	ctx := context.Background()
-	var messages []openai.ChatCompletionMessageParamUnion
+	var messages []openai.ChatCompletionMessageParamUnion = []openai.ChatCompletionMessageParamUnion{
+		openai.SystemMessage(systemPrompt),
+	}
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Buffer(make([]byte, 0, 64*1024), 4*1024*1024)
 
@@ -82,6 +84,9 @@ func main() {
 		}
 
 		input := strings.TrimSpace(scanner.Text())
+		if input == "exit" {
+			break
+		}
 		if input == "" {
 			continue
 		}
@@ -92,6 +97,7 @@ func main() {
 
 		messages = agentLoop(ctx, messages)
 	}
+
 }
 
 func agentLoop(
