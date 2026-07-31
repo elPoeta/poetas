@@ -11,6 +11,7 @@ import (
 
 	"github.com/elPoeta/poetas/internal/api"
 	"github.com/elPoeta/poetas/internal/provider"
+	"github.com/elPoeta/poetas/internal/ui"
 )
 
 const systemPrompt = `You are a coding assistant named Poetas running in a terminal.
@@ -92,6 +93,8 @@ func main() {
 
 	scanner.Buffer(make([]byte, 0, 64*1024), 4*1024*1024)
 
+	ui.PrintBanner()
+
 	for {
 		fmt.Print("> ")
 
@@ -123,7 +126,10 @@ func main() {
 
 		// Bucle del agente: continúa hasta que el modelo ya no solicite tools.
 		for {
+			sp := ui.StartSpinner("thinking...")
 			res, err := llm.Send(ctx, messages, tools)
+			sp.Stop()
+
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "send: %v\n", err)
 				break
