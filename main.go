@@ -31,6 +31,11 @@ The subagent has its own context window, so it can do many reads without clutter
 
 Be concise. Be honest when you don't know — guessing is worse than saying "I'd need to read X to answer that." Match the user's language: if they write in Spanish, answer in Spanish.`
 
+var (
+	llm      provider.Provider
+	messages []api.Message
+)
+
 var activeSysPrompt string
 
 func envTruthy(name string) bool {
@@ -105,12 +110,12 @@ func main() {
 			return
 		}
 
-		input := strings.TrimSpace(scanner.Text())
-		if input == "" {
+		userInput := strings.TrimSpace(scanner.Text())
+		if userInput == "" {
 			continue
 		}
-		if input == "exit" {
-			return
+		if runCommand(userInput) {
+			continue
 		}
 
 		// Agregar mensaje del usuario al historial.
@@ -119,7 +124,7 @@ func main() {
 			Content: []api.Block{
 				{
 					Type: api.BlockText,
-					Text: input,
+					Text: userInput,
 				},
 			},
 		})
