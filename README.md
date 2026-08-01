@@ -12,3 +12,8 @@ go mod init github.com/elPoeta/poetas
 ```bash
 go run main.go
 ```
+
+### Install a Module
+```bash
+go get github.com/...
+```
